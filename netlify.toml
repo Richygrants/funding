@@ -1,0 +1,11 @@
+[build]
+  publish = "."
+
+[functions]
+  directory = "netlify/functions"
+  node_bundler = "esbuild"
+
+[[redirects]]
+  from = "/api/submit-application"
+  to = "/.netlify/functions/submit-application"
+  status = 200

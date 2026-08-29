@@ -1,0 +1,12 @@
+{
+  "name": "usa-funding-portal",
+  "version": "1.0.0",
+  "private": true,
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "check": "node --check script.js && node --check server/telegram-handler.js && node --check server/local-server.js && node --check api/submit-application.js && node --check netlify/functions/submit-application.js",
+    "dev": "node server/local-server.js"
+  }
+}
