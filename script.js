@@ -10,7 +10,7 @@ const stepLabel = document.getElementById("stepLabel");
 const percent = document.getElementById("percent");
 const actions = document.querySelector(".actions");
 const stepPips = [...document.querySelectorAll("#stepPips li")];
-const submissionEndpoint = "/api/submit-application";
+const submissionEndpoint = "/api/submit";
 let current = 0;
 
 function showError(msg) {
@@ -104,11 +104,11 @@ function submissionErrorMessage(response, result = {}) {
   if (response && response.status === 404) {
     return "The secure submission service is not available. Please try again shortly.";
   }
-  return result.message || "Your application could not be submitted right now. Please try again shortly.";
+  return result.message || result.error || "Your application could not be submitted right now. Please try again shortly.";
 }
 
 function showSuccess() {
-  form.innerHTML = `<div class="success-state"><div class="success-icon" aria-hidden="true"></div><p class="eyebrow">Application received</p><h3 class="step-title">Application submitted</h3><p class="muted">Thank you. Your funding application has been received, and a confirmation will be sent to your email address.</p><button type="button" class="primary" onclick="location.reload()">Start new application</button></div>`;
+  form.innerHTML = `<div class="success-state"><div class="success-icon" aria-hidden="true"></div><p class="eyebrow">Application received</p><h3 class="step-title">Application submitted</h3><p class="muted">Thank you — we've received your application and will be in touch.</p></div>`;
 }
 
 next.addEventListener("click", () => {
@@ -141,10 +141,12 @@ form.addEventListener("submit", async (event) => {
       },
       body: JSON.stringify(buildSubmissionPayload())
     });
-    const result = await response.json().catch(() => ({}));
 
-    if (!response.ok || !result.ok) {
-      throw new Error(submissionErrorMessage(response, result));
+    const json = await response.json().catch(() => ({}));
+
+    // Expect { success: true } from Pages Function
+    if (!response.ok || !json.success) {
+      throw new Error(submissionErrorMessage(response, json));
     }
 
     showSuccess();
